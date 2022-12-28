@@ -1,0 +1,73 @@
+ORDER SERVICE 
+------------------------------------------------------------------
+
+PRODUCER: 
+
+1. build rabbitTemplate
+2. create send method and add Order Event as arg
+3. use convertAndSand(exchange=place, orderRoutingKey=route key, orderEvent=msg) 
+
+on Controller: req. POST - Order object 
+
+1. create Order Event,  
+2. set Order to Order Event 
+3. use Order Producer's sendMessage(event) 
+
+
+[under Config]
+
+QUEUE - ROUTING KEY 
+
+
+// connect orderQueue to echange using the routing key 
+ @Bean
+    public Binding binding(){
+        return BindingBuilder
+                .bind(orderQueue())
+                .to(exchange())
+                .with(orderRoutingKey);
+    }
+
+// message converter between Java Object <--> JSON  
+    @Bean
+    public MessageConverter converter(){
+        return new Jackson2JsonMessageConverter();
+    }
+
+// set the converter so they can communicate 
+    @Bean
+    public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory){
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(converter());
+        return rabbitTemplate;
+    }
+
+
+EMAIL SERVIE 
+----------------------------------------------------------------
+
+@Service
+public class OrderConsumer {
+
+    private Logger LOGGER = LoggerFactory.getLogger(OrderConsumer.class);
+
+// queue name is "email" 
+  @RabbitListener(queues = "${rabbitmq.queue.email.name}")
+    public void consume(OrderEvent event){
+
+        LOGGER.info(String.format("Order event received in email service => %s", event.toString()));
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
