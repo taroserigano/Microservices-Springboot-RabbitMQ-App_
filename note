@@ -27,3 +27,17 @@ docker run --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3.11-management
 
 15672: rabbit's port 
 5672: spring for rabbit 
+
+
+
+
+Dock 
+
+Depends on l confis server 
+Makes sure that config server is loaded to read the properties file to read from 
+
+Deploy 
+
+Window 120s 
+
+The total period of restart attempt
